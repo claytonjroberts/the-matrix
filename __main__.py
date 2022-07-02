@@ -1,21 +1,28 @@
 import pygame, pygame.font
 import random
 
+COLOR = (0, 200, 200)  # The Color of the Matrix
+ZERO_ONE = False  # Makes a rain of zeros and ones instead of random ASCII character
+
 
 def IsWritten():
     defTemp = True
-    for x in xrange((lettersOnScreen[0] / 2) - (len(str) / 2), (lettersOnScreen[0] / 2) + (len(str) / 2) + 1):
+    for x in range(
+        (lettersOnScreen[0] / 2) - (len(str) / 2),
+        (lettersOnScreen[0] / 2) + (len(str) / 2) + 1,
+    ):
         if xHeads[x] == -1:
             defTemp = False
     return defTemp
 
-def getColor(fx,fy):
-    defTemp=xHeads[fx]-fy
 
-    if (maxCol>defTemp>0):
+def getColor(fx, fy):
+    defTemp = xHeads[fx] - fy
+
+    if maxCol > defTemp > 0:
         return defTemp
     else:
-        return maxCol-1
+        return maxCol - 1
 
 
 try:
@@ -24,7 +31,7 @@ try:
     # Close opend file
     fo.close()
 except:
-    str = ''
+    str = ""
 str = str.upper()  # for better placement
 
 
@@ -36,64 +43,93 @@ surface = pygame.display.set_mode(displLength, pygame.FULLSCREEN)
 # Font init
 pygame.font.init()
 fontObj = pygame.font.Font(pygame.font.get_default_font(), 14)
-sampleLetter = fontObj.render('_', False, (0, 111, 0))
+sampleLetter = fontObj.render("_", False, (0, 111, 0))
 letterSize = (sampleLetter.get_width(), sampleLetter.get_height())
-lettersOnScreen = (int(float(displLength[0]) / letterSize[0]),
-                   int(float(displLength[1]) / letterSize[1]))
+lettersOnScreen = (
+    int(displLength[0] / letterSize[0]),
+    int(displLength[1] / letterSize[1]),
+)
 
 # color init
 colorList = [(255, 255, 255)]
-primeColors = len(colorList)+1
-colorList += [(10, 210, 10)] * ((lettersOnScreen[1] - 10))
+primeColors = len(colorList) + 1
+R, G, B = COLOR
+colorList += [(R + 10, G + 10, B + 10)] * ((lettersOnScreen[1] - 10))
 endColors = len(colorList)
-colorList += [(0, 150, 0),(0, 100, 0),(0, 0, 0)]
-endColors = len(colorList) - endColors+1
+colorList += [
+    (R - 50 if R else 0, B - 50 if B else 0, G - 50 if G else 0),
+    (R - 100 if R else 0, B - 100 if B else 0, G - 100 if G else 0),
+    (0, 0, 0),
+]
+endColors = len(colorList) - endColors + 1
 
 maxCol = len(colorList)
 
 
 # char generator
-letters = [[0 for _ in xrange(lettersOnScreen[1] + 1)] for _ in xrange(lettersOnScreen[0])]
-char = chr(random.randint(32, 126))
+letters = [
+    [0 for _ in range(lettersOnScreen[1] + 1)] for _ in range(lettersOnScreen[0])
+]
+if ZERO_ONE:
+    char = chr(random.randint(48, 49))
+else:
+    char = chr(random.randint(32, 126))
 
-for y in xrange(lettersOnScreen[1] + 1):
-    for x in xrange(lettersOnScreen[0]):
-        letters[x][y] = [fontObj.render(char, False, colorList[col]) for col in xrange(maxCol)]
-        char = chr(random.randint(32, 126))
+for y in range(lettersOnScreen[1] + 1):
+    for x in range(lettersOnScreen[0]):
+        letters[x][y] = [
+            fontObj.render(char, False, colorList[col]) for col in range(maxCol)
+        ]
+        if ZERO_ONE:
+            char = chr(random.randint(48, 49))
+        else:
+            char = chr(random.randint(32, 126))
 
 
 # word write
 wordMode = False
 if len(str) > 0:
     wordMode = True
-    for x in xrange((lettersOnScreen[0] / 2) - (len(str) / 2),
-                    (lettersOnScreen[0] / 2) + (len(str) / 2)):
-        letters[x][lettersOnScreen[1] / 2] = [fontObj.render(str[x - ((lettersOnScreen[0] / 2) - (len(str) / 2))],
-                                                             False, (255, 255, 255))
-                                              for col in xrange(maxCol)]
+    for x in range(
+        (lettersOnScreen[0] / 2) - (len(str) / 2),
+        (lettersOnScreen[0] / 2) + (len(str) / 2),
+    ):
+        letters[x][lettersOnScreen[1] / 2] = [
+            fontObj.render(
+                str[x - ((lettersOnScreen[0] / 2) - (len(str) / 2))],
+                False,
+                (255, 255, 255),
+            )
+            for col in range(maxCol)
+        ]
 
-    for y in xrange(lettersOnScreen[1] / 2 + 1,
-                    lettersOnScreen[1] + 1):
-        for x in xrange((lettersOnScreen[0] / 2) - (len(str) / 2),
-                        (lettersOnScreen[0] / 2) + (len(str) / 2)):
-            letters[x][y] = [fontObj.render(char, False, (0, 0, 0)) for col in xrange(maxCol)]
+    for y in range(lettersOnScreen[1] / 2 + 1, lettersOnScreen[1] + 1):
+        for x in range(
+            (lettersOnScreen[0] / 2) - (len(str) / 2),
+            (lettersOnScreen[0] / 2) + (len(str) / 2),
+        ):
+            letters[x][y] = [
+                fontObj.render(char, False, (0, 0, 0)) for col in range(maxCol)
+            ]
             char = chr(random.randint(32, 126))
 
     if len(str) % 2 == 1:
 
-        letters[(lettersOnScreen[0] / 2) + (len(str) / 2)][lettersOnScreen[1] / 2] = \
-            [fontObj.render(str[len(str) - 1], False, (255, 255, 255)) for col in xrange(maxCol)]
+        letters[(lettersOnScreen[0] / 2) + (len(str) / 2)][lettersOnScreen[1] / 2] = [
+            fontObj.render(str[len(str) - 1], False, (255, 255, 255))
+            for col in range(maxCol)
+        ]
 
-        for y in xrange(lettersOnScreen[1] / 2 + 1,
-                        lettersOnScreen[1] + 1):
-            letters[(lettersOnScreen[0] / 2) + (len(str) / 2)][y] = \
-                [fontObj.render(char, False, (0, 0, 0)) for col in xrange(maxCol)]
+        for y in range(lettersOnScreen[1] / 2 + 1, lettersOnScreen[1] + 1):
+            letters[(lettersOnScreen[0] / 2) + (len(str) / 2)][y] = [
+                fontObj.render(char, False, (0, 0, 0)) for col in range(maxCol)
+            ]
             char = chr(random.randint(32, 126))
 
 if wordMode:
-    xHeads = [-1 for _ in xrange(lettersOnScreen[0] + 1)]
+    xHeads = [-1 for _ in range(lettersOnScreen[0] + 1)]
 else:
-    xHeads = [0 for _ in xrange(lettersOnScreen[0] + 1)]
+    xHeads = [0 for _ in range(lettersOnScreen[0] + 1)]
 
 
 # 1st loop - word write, no char switch
@@ -113,21 +149,26 @@ while ticksLeft > 0 and (notDone) and (wordMode):
             if xHeads[randomInt] == -1:
                 xHeads[randomInt] = 1
             if random.randint(1, 6):
-                randomInt = random.randint((lettersOnScreen[0] / 2) - len(str),
-                                           (lettersOnScreen[0] / 2) + len(str) + 1)
+                randomInt = random.randint(
+                    (lettersOnScreen[0] / 2) - len(str),
+                    (lettersOnScreen[0] / 2) + len(str) + 1,
+                )
                 if xHeads[randomInt] == -1:
                     xHeads[randomInt] = 1
         else:
             if xHeads[randomInt] == 0:
                 xHeads[randomInt] = 1
-    for x in xrange(lettersOnScreen[0]):
+    for x in range(lettersOnScreen[0]):
         col = 0
         counter = xHeads[x]
         while (counter > 0) and (col < maxCol):
-            if (counter < lettersOnScreen[1] + 2) and (col < primeColors or
-                                    col > (maxCol - endColors)):
-                surface.blit(letters[x][counter - 1][col], (x * letterSize[0],
-                                                            (counter - 1) * letterSize[1]))
+            if (counter < lettersOnScreen[1] + 2) and (
+                col < primeColors or col > (maxCol - endColors)
+            ):
+                surface.blit(
+                    letters[x][counter - 1][col],
+                    (x * letterSize[0], (counter - 1) * letterSize[1]),
+                )
             col += 1
             counter -= 1
         if xHeads[x] > 0:
@@ -141,22 +182,27 @@ while ticksLeft > 0 and (notDone) and (wordMode):
 
 # word delete
 if len(str) % 2 == 1:
-    strLen = (lettersOnScreen[0] / 2) + (len(str) / 2) + 1
+    strLen = int((lettersOnScreen[0] / 2) + (len(str) / 2) + 1)
 else:
-    strLen = (lettersOnScreen[0] / 2) + (len(str) / 2)
+    strLen = int((lettersOnScreen[0] / 2) + (len(str) / 2))
 
-for x in xrange((lettersOnScreen[0] / 2) - (len(str) / 2),
-                strLen):
-    letters[x][lettersOnScreen[1] / 2] = \
-        [fontObj.render(str[x - ((lettersOnScreen[0] / 2) - (len(str) / 2))], False, colorList[col])
-         for col in xrange(maxCol)]
+for x in range(int((lettersOnScreen[0] / 2) - (len(str) / 2)), strLen):
+    letters[x][lettersOnScreen[1] / 2] = [
+        fontObj.render(
+            str[x - ((lettersOnScreen[0] / 2) - (len(str) / 2))], False, colorList[col]
+        )
+        for col in range(maxCol)
+    ]
 
 char = chr(random.randint(32, 126))
-for y in xrange(lettersOnScreen[1] / 2 + 1,
-                lettersOnScreen[1] + 1):
-    for x in xrange((lettersOnScreen[0] / 2) - (len(str) / 2),
-                    (lettersOnScreen[0] / 2) + (len(str) / 2) + 1):
-        letters[x][y] = [fontObj.render(char, False, colorList[col]) for col in xrange(maxCol)]
+for y in range(int(lettersOnScreen[1] / 2 + 1), int(lettersOnScreen[1] + 1)):
+    for x in range(
+        int((lettersOnScreen[0] / 2) - (len(str) / 2)),
+        int((lettersOnScreen[0] / 2) + (len(str) / 2) + 1),
+    ):
+        letters[x][y] = [
+            fontObj.render(char, False, colorList[col]) for col in range(maxCol)
+        ]
         char = chr(random.randint(32, 126))
 
 
@@ -171,37 +217,49 @@ while notDone:
         randomInt = random.randint(0, lettersOnScreen[0])
         if xHeads[randomInt] <= 0:
             xHeads[randomInt] = 1
-    for x in xrange(lettersOnScreen[0]):
+    for x in range(lettersOnScreen[0]):
         col = 0
         counter = xHeads[x]
         # main loop for redraw
         while (counter > 0) and (col < maxCol):
-            if (counter < lettersOnScreen[1] + 2) and (col < primeColors or
-                                    col > (maxCol - endColors)):
-                surface.blit(letters[x][counter - 1][col], (x * letterSize[0],
-                                                            (counter - 1) * letterSize[1]))
+            if (counter < lettersOnScreen[1] + 2) and (
+                col < primeColors or col > (maxCol - endColors)
+            ):
+                surface.blit(
+                    letters[x][counter - 1][col],
+                    (x * letterSize[0], (counter - 1) * letterSize[1]),
+                )
             col += 1
             counter -= 1
 
         # charswirch
         randomInt = random.randint(1, maxCol - 1)
         charPosY = xHeads[x] - randomInt
-        if (lettersOnScreen[1] - 1 > charPosY > 0):
+        if lettersOnScreen[1] - 1 > charPosY > 0:
             temp = letters[x][charPosY]
             randomX = random.randint(1, lettersOnScreen[0] - 1)
-            randomY = random.randint(1,lettersOnScreen[1] - 1)
+            randomY = random.randint(1, lettersOnScreen[1] - 1)
 
-            surface.blit(letters[x][charPosY][maxCol - 1], (x * letterSize[0],
-                                                            charPosY * letterSize[1]))
-            surface.blit(letters[randomX][randomY][maxCol - 1], (randomX * letterSize[0],
-                                                            randomY * letterSize[1]))
+            surface.blit(
+                letters[x][charPosY][maxCol - 1],
+                (x * letterSize[0], charPosY * letterSize[1]),
+            )
+            surface.blit(
+                letters[randomX][randomY][maxCol - 1],
+                (randomX * letterSize[0], randomY * letterSize[1]),
+            )
             # char swap
             letters[x][charPosY] = letters[randomX][randomY]
             letters[randomX][randomY] = temp
 
-            surface.blit(letters[x][charPosY][randomInt], (x * letterSize[0], charPosY * letterSize[1]))
-            surface.blit(letters[randomX][randomY][getColor(randomX,randomY)],
-                         (randomX * letterSize[0], randomY * letterSize[1]))
+            surface.blit(
+                letters[x][charPosY][randomInt],
+                (x * letterSize[0], charPosY * letterSize[1]),
+            )
+            surface.blit(
+                letters[randomX][randomY][getColor(randomX, randomY)],
+                (randomX * letterSize[0], randomY * letterSize[1]),
+            )
         # check if is out of screen
         if xHeads[x] > 0:
             xHeads[x] += 1
